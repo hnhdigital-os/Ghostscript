@@ -1,5 +1,6 @@
 {
-    "name": "gravitymedia/ghostscript",
+    "name": "hnhdigital-os/ghostscript",
+    "replaces": "gravitymedia/ghostscript",
     "description": "Ghostscript is an object oriented Ghostscript binary wrapper for PHP.",
     "keywords": [
         "gravitymedia",
