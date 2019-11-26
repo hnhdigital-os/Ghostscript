@@ -85,6 +85,21 @@ trait PageTrait
     }
 
     /**
+     * Set FitPage parameter
+     * This is a "convenience" operator that sets the various options to perform page fitting for specific file
+     *     types.
+     * This option sets the -dEPSFitPage, -dPDFFitPage, and the -dFitPage options.
+     *
+     * @return $this
+     */
+    public function setFitPage()
+    {
+        $this->setArgument('-dFitPage');
+
+        return $this;
+    }
+
+    /**
      * TODO
      *
      * -dFIXEDMEDIA
