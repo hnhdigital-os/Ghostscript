@@ -100,6 +100,24 @@ trait PageTrait
     }
 
     /**
+     * Set default papersize parameter
+     * -sDEFAULTPAPERSIZE=a4
+     *     This value will be used to replace the device default papersize ONLY if the default papersize for the device
+     *     is 'letter' or 'a4' serving to insulate users of A4 or 8.5x11 from particular device defaults (the
+     *     collection of contributed drivers in Ghostscript vary as to the default size).
+     *
+     * @param string $paperSize.
+     *
+     * @return $this
+     */
+    public function setDefaultPaperSize($paperSize)
+    {
+        $this->setArgument(sprintf('-sDEFAULTPAPERSIZE=%s', $paperSize));
+
+        return $this;
+    }
+
+    /**
      * TODO
      *
      * -dFIXEDMEDIA
@@ -136,11 +154,5 @@ trait PageTrait
      *     This value will be used to replace the device default papersize ONLY if the default papersize for the device
      *     is 'letter' or 'a4' serving to insulate users of A4 or 8.5x11 from particular device defaults (the
      *     collection of contributed drivers in Ghostscript vary as to the default size).
-     *
-     * -dFitPage
-     *     This is a "convenience" operator that sets the various options to perform page fitting for specific file
-     *     types.
-     *
-     *     This option sets the -dEPSFitPage, -dPDFFitPage, and the -dFitPage options.
      */
 }
