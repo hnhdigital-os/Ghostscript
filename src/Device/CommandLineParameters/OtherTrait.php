@@ -466,4 +466,18 @@ trait OtherTrait
 
         return $this;
     }
+
+    /**
+     * Set a custom argument.
+     *
+     * @param string $argument
+     *
+     * @return $this
+     */
+    public function setCustomArgument($argument)
+    {
+        $this->setArgument($argument);
+
+        return $this;
+    }
 }
