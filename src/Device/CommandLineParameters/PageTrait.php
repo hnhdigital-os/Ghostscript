@@ -118,6 +118,38 @@ trait PageTrait
     }
 
     /**
+     * Sets the initial page width.
+     *
+     * Points are specified in 1/72" units.
+     *
+     * @param int $deviceWidth.
+     *
+     * @return $this
+     */
+    public function setDeviceWidth($deviceWidth)
+    {
+        $this->setArgument(sprintf('-dDEVICEWIDTHPOINTS=%s', $deviceWidth));
+
+        return $this;
+    }
+
+    /**
+     * Sets the initial page height.
+     *
+     * Points are specified in 1/72" units.
+     *
+     * @param int $deviceHeight.
+     *
+     * @return $this
+     */
+    public function setDeviceHeight($deviceHeight)
+    {
+        $this->setArgument(sprintf('-dDEVICEHEIGHTPOINTS=%s', $deviceHeight));
+
+        return $this;
+    }
+
+    /**
      * TODO
      *
      * -dFIXEDMEDIA
@@ -149,10 +181,5 @@ trait PageTrait
      * -dDEVICEWIDTHPOINTS=w
      * -dDEVICEHEIGHTPOINTS=h
      *     Sets the initial page width to w or initial page height to h respectively, specified in 1/72" units.
-     *
-     * -sDEFAULTPAPERSIZE=a4
-     *     This value will be used to replace the device default papersize ONLY if the default papersize for the device
-     *     is 'letter' or 'a4' serving to insulate users of A4 or 8.5x11 from particular device defaults (the
-     *     collection of contributed drivers in Ghostscript vary as to the default size).
      */
 }
