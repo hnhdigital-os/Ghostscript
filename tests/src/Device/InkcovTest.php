@@ -1,53 +1,38 @@
 <?php
 
-namespace GravityMedia\Ghostscript\Device;
+namespace GravityMedia\GhostscriptTest\Device;
 
-use GravityMedia\Ghostscript\Ghostscript;
+use GravityMedia\Ghostscript\Device\AbstractDevice;
+use GravityMedia\Ghostscript\Device\Inkcov;
 use GravityMedia\Ghostscript\Process\Argument;
-use GravityMedia\Ghostscript\Process\Arguments;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 /**
  * The inkcov device test class.
  *
  * @package GravityMedia\GhostscriptTest\Devices
- *
- * @covers  \GravityMedia\Ghostscript\Device\Inkcov
- *
- * @uses    \GravityMedia\Ghostscript\Ghostscript
- * @uses    \GravityMedia\Ghostscript\Input
- * @uses    \GravityMedia\Ghostscript\Device\AbstractDevice
- * @uses    \GravityMedia\Ghostscript\Device\NoDisplay
- * @uses    \GravityMedia\Ghostscript\Process\Argument
- * @uses    \GravityMedia\Ghostscript\Process\Arguments
  */
-class InkcovTest extends TestCase
+#[CoversClass(\GravityMedia\Ghostscript\Device\Inkcov::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Ghostscript::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Input::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Device\AbstractDevice::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Device\NoDisplay::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Process\Argument::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Process\Arguments::class)]
+class InkcovTest extends DeviceTestCase
 {
-    /**
-     * Returns an OS independent representation of the commandline.
-     *
-     * @param string $commandline
-     *
-     * @return mixed
-     */
-    protected function quoteCommandLine($commandline)
+    protected function createDevice(?string $version = null): AbstractDevice
     {
-        if ('WIN' === strtoupper(substr(PHP_OS, 0, 3))) {
-            return str_replace('"', '\'', $commandline);
-        }
-
-        return $commandline;
+        return new Inkcov($this->getGhostscript($version), $this->arguments);
     }
 
     public function testDeviceCreation()
     {
-        $ghostscript = new Ghostscript();
-        $arguments = new Arguments();
-
-        $device = new Inkcov($ghostscript, $arguments);
+        $device = $this->createDevice();
 
         $this->assertInstanceOf(Inkcov::class, $device);
-        $this->assertInstanceOf(Argument::class, $arguments->getArgument('-sDEVICE'));
-        $this->assertEquals('inkcov', $arguments->getArgument('-sDEVICE')->getValue());
+        $this->assertInstanceOf(Argument::class, $this->arguments->getArgument('-sDEVICE'));
+        $this->assertEquals('inkcov', $this->arguments->getArgument('-sDEVICE')->getValue());
     }
 }

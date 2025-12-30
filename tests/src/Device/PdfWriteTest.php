@@ -10,54 +10,28 @@ namespace GravityMedia\GhostscriptTest\Device;
 use GravityMedia\Ghostscript\Device\PdfWrite;
 use GravityMedia\Ghostscript\Enum\PdfSettings;
 use GravityMedia\Ghostscript\Enum\ProcessColorModel;
-use GravityMedia\Ghostscript\Ghostscript;
-use GravityMedia\Ghostscript\Process\Arguments as ProcessArguments;
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 
 /**
  * The PDF write device test class.
  *
  * @package GravityMedia\GhostscriptTest\Devices
- *
- * @covers  \GravityMedia\Ghostscript\Device\PdfWrite
- *
- * @uses    \GravityMedia\Ghostscript\Ghostscript
- * @uses    \GravityMedia\Ghostscript\Input
- * @uses    \GravityMedia\Ghostscript\Enum\PdfSettings
- * @uses    \GravityMedia\Ghostscript\Enum\ProcessColorModel
- * @uses    \GravityMedia\Ghostscript\Device\AbstractDevice
- * @uses    \GravityMedia\Ghostscript\Device\DistillerParametersTrait
- * @uses    \GravityMedia\Ghostscript\Process\Argument
- * @uses    \GravityMedia\Ghostscript\Process\Arguments
  */
-class PdfWriteTest extends TestCase
+#[CoversClass(\GravityMedia\Ghostscript\Device\PdfWrite::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Ghostscript::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Input::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Enum\PdfSettings::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Enum\ProcessColorModel::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Device\AbstractDevice::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Device\DistillerParametersTrait::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Process\Argument::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Process\Arguments::class)]
+class PdfWriteTest extends DeviceTestCase
 {
-    /**
-     * Returns an OS independent representation of the commandline.
-     *
-     * @param string $commandline
-     *
-     * @return mixed
-     */
-    protected function quoteCommandLine($commandline)
+    protected function createDevice(?string $version = null): PdfWrite
     {
-        if ('WIN' === strtoupper(substr(PHP_OS, 0, 3))) {
-            return str_replace('"', '\'', $commandline);
-
-        }
-
-        return $commandline;
-    }
-
-    /**
-     * @return PdfWrite
-     */
-    protected function createDevice()
-    {
-        $ghostscript = new Ghostscript();
-        $processArguments = new ProcessArguments();
-
-        return new PdfWrite($ghostscript, $processArguments);
+        return new PdfWrite($this->getGhostscript($version), $this->arguments);
     }
 
     public function testDeviceCreation()
@@ -88,9 +62,9 @@ class PdfWriteTest extends TestCase
     }
 
     /**
-     * @return string[]
+     * @return array<string[]>
      */
-    public function providePdfSettings()
+    public static function providePdfSettings()
     {
         return [
             [PdfSettings::__DEFAULT],
@@ -123,9 +97,9 @@ class PdfWriteTest extends TestCase
     }
 
     /**
-     * @return string[]
+     * @return array<string[]>
      */
-    public function provideProcessColorModel()
+    public static function provideProcessColorModel(): array
     {
         return [
             [ProcessColorModel::DEVICE_RGB],
@@ -143,12 +117,46 @@ class PdfWriteTest extends TestCase
         $this->createDevice()->setProcessColorModel('/foo');
     }
 
-    public function testProcessCreation()
+    public static function dataProcessCreation(): array
     {
-        $process = $this->createDevice()->createProcess();
+        return [
+            [fn (self $self) => $self->assertProcessCreation(
+                version: '9.00',
+                expectSetPDFWrite: true,
+            )],
+            [fn (self $self) => $self->assertProcessCreation(
+                version: '9.10',
+                expectSetPDFWrite: true,
+            )],
+            [fn (self $self) => $self->assertProcessCreation(
+                version: '9.50',
+                expectSetPDFWrite: false,
+            )],
+            [fn (self $self) => $self->assertProcessCreation(
+                version: '10.00.0',
+                expectSetPDFWrite: false,
+            )]
+        ];
+    }
 
+    /**
+     * @dataProvider dataProcessCreation
+     */
+    public function testProcessCreation(callable $closure): void
+    {
+        $closure($this);
+    }
+
+    protected function assertProcessCreation(
+        string $version,
+        bool $expectSetPDFWrite,
+    ): void
+    {
+        $process = $this->createDevice($version)->createProcess();
+
+        $command = "'gs' '-sDEVICE=pdfwrite' '-dPDFSETTINGS=/default'";
         $this->assertEquals(
-            "'gs' '-sDEVICE=pdfwrite' '-dPDFSETTINGS=/default' '-c' '.setpdfwrite'",
+            $expectSetPDFWrite ? "{$command} '-c' '.setpdfwrite'" : $command,
             $this->quoteCommandLine($process->getCommandLine())
         );
     }
