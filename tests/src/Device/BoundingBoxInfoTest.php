@@ -7,36 +7,39 @@
 
 namespace GravityMedia\GhostscriptTest\Device;
 
+use GravityMedia\Ghostscript\Device\AbstractDevice;
 use GravityMedia\Ghostscript\Device\BoundingBoxInfo;
 use GravityMedia\Ghostscript\Ghostscript;
 use GravityMedia\Ghostscript\Process\Argument;
 use GravityMedia\Ghostscript\Process\Arguments;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 /**
  * The bounding box info device test class.
  *
  * @package GravityMedia\GhostscriptTest\Devices
- *
- * @covers  \GravityMedia\Ghostscript\Device\BoundingBoxInfo
- *
- * @uses    \GravityMedia\Ghostscript\Ghostscript
- * @uses    \GravityMedia\Ghostscript\Device\AbstractDevice
- * @uses    \GravityMedia\Ghostscript\Process\Argument
- * @uses    \GravityMedia\Ghostscript\Process\Arguments
  */
-class BoundingBoxInfoTest extends TestCase
+#[CoversClass(\GravityMedia\Ghostscript\Device\BoundingBoxInfo::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Ghostscript::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Device\AbstractDevice::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Process\Argument::class)]
+#[UsesClass(\GravityMedia\Ghostscript\Process\Arguments::class)]
+class BoundingBoxInfoTest extends DeviceTestCase
 {
+    protected function createDevice(?string $version = null): AbstractDevice
+    {
+        return new BoundingBoxInfo($this->getGhostscript($version), $this->arguments);
+    }
+
     public function testDeviceCreation()
     {
-        $ghostscript = new Ghostscript();
-        $arguments = new Arguments();
-
-        $device = new BoundingBoxInfo($ghostscript, $arguments);
+        $device = $this->createDevice();
 
         $this->assertInstanceOf(BoundingBoxInfo::class, $device);
 
-        $argument = $arguments->getArgument('-sDEVICE');
+        $argument = $this->arguments->getArgument('-sDEVICE');
 
         $this->assertInstanceOf(Argument::class, $argument);
         $this->assertEquals('bbox', $argument->getValue());
