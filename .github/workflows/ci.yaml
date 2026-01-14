@@ -35,7 +35,7 @@ jobs:
           key: ${{ runner.os }}-PHP-Extensions-V1
 
       - name: Cache PHP extensions
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.php-extensions-cache.outputs.dir }}
           key: ${{ steps.php-extensions-cache.outputs.key }}
@@ -52,7 +52,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
         
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-Composer-V1-${{ hashFiles('**/composer.lock') }}
